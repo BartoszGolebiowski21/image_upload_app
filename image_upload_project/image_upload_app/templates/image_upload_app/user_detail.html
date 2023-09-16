@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail</title>
+</head>
+<body>
+    <p>Name: {{ user.username }}</p>
+    <p>Tier: {{ tier.name }}</p>
+    <p>Tier description: {{ tier.description }}</p>
+    <p></p>
+
+    {% for image in images %}
+        <p>{{ image.name }} </p>
+    {% endfor %}
+</body>
+</html>
+
+
+
