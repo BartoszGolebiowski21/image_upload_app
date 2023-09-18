@@ -7,7 +7,8 @@ from rest_framework import status
 
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import parser_classes
-
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.views import APIView
 
 @api_view(['GET'])
 def get_routes(request):
@@ -82,16 +83,3 @@ def upload_image(request):
         image.save()
         serializer = ImageSerializer(image)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # if request.method == 'POST':
-    #     parser = FileUploadParser()
-    #     file = request.data.get('file')
-    #     if not file:
-    #         return Response({'error': 'File not found'}, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     image = Image(user=request.user, file=file, name=file.name)
-    #     image.save()
-    #     serializer = ImageSerializer(image)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
