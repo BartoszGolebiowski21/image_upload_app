@@ -1,8 +1,12 @@
-from django.http import JsonResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .serializers import ImageSerializer, UserSerializer, TierSerializer
 from image_upload_app.models import Image, User, Tier
+from rest_framework import status
+
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import parser_classes
 
 
 @api_view(['GET'])
@@ -12,6 +16,8 @@ def get_routes(request):
         {'GET': 'api/images/id'},
         {'GET': 'api/users/'},
         {'GET': 'api/users/id'},
+        {'GET': 'api/tiers/'},
+        {'GET': 'api/tiers/id'},
     ]
     return Response(routes)
 
@@ -62,3 +68,30 @@ def get_tier(request, pk):
     tier = Tier.objects.get(id=pk)
     serializer = TierSerializer(tier, many=False)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def upload_image(request):
+    if request.method == 'POST':
+        user = request.user
+        name = request.data.get('name')
+        file = request.data.get('file')
+        image = Image(user=user, name=name, file=file)
+        image.save()
+        serializer = ImageSerializer(image)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    # if request.method == 'POST':
+    #     parser = FileUploadParser()
+    #     file = request.data.get('file')
+    #     if not file:
+    #         return Response({'error': 'File not found'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    #     image = Image(user=request.user, file=file, name=file.name)
+    #     image.save()
+    #     serializer = ImageSerializer(image)
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
