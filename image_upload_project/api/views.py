@@ -7,8 +7,9 @@ from rest_framework import status
 
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import parser_classes
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.views import APIView
+
+from .utilities import generate_thumbnail
+
 
 @api_view(['GET'])
 def get_routes(request):
@@ -73,7 +74,7 @@ def get_tier(request, pk):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
+# @parser_classes([MultiPartParser, FormParser])
 def upload_image(request):
     if request.method == 'POST':
         user = request.user
@@ -81,5 +82,12 @@ def upload_image(request):
         file = request.data.get('file')
         image = Image(user=user, name=name, file=file)
         image.save()
+
+        thumbnail_200 = generate_thumbnail(image, 200)
+        image.thumbnail_200.save(name + "-thumbnail200.jpg", thumbnail_200)
+
+        thumbnail_400 = generate_thumbnail(image, 200)
+        image.thumbnail_400.save(name + "-thumbnail400.jpg", thumbnail_400)
+
         serializer = ImageSerializer(image)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
