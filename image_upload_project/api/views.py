@@ -46,10 +46,12 @@ def upload_image(request):
     """
     Uploads an image with additional features based on the user's tier.
 
-    This view allows authenticated users to upload images with different capabilities depending on their tier.
+    This view allows authenticated users to upload images with different capabilities 
+    depending on their tier.
     
     Args:
-        request (HttpRequest): The HTTP request object containing the image data and user information.
+        request (HttpRequest): The HTTP request object containing the image data and 
+        user information.
 
     Returns:
         Response: A JSON response containing the uploaded image's details.
