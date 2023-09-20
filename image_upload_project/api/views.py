@@ -43,6 +43,24 @@ def get_image(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def upload_image(request):
+    """
+    Uploads an image with additional features based on the user's tier.
+
+    This view allows authenticated users to upload images with different capabilities depending on their tier.
+    
+    Args:
+        request (HttpRequest): The HTTP request object containing the image data and user information.
+
+    Returns:
+        Response: A JSON response containing the uploaded image's details.
+        
+    Raises:
+        BadRequest: If the request is missing required parameters.
+        
+    Permissions:
+        - User must be authenticated.
+
+    """
     user = request.user
 
     name = request.data.get('name')
