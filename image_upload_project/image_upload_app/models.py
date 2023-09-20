@@ -1,14 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+import os
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 
 class Tier(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
-    thumbnail_sizes = models.TextField()
-    original_link = models.BooleanField(default=False)
-    expiring_link = models.BooleanField(default=False)
-    link_expiration_seconds = models.IntegerField(default=3600)
 
     def __str__(self):
         return f"{self.name}"
@@ -16,18 +17,31 @@ class Tier(models.Model):
 
 class Image(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    file = models.ImageField(upload_to="images", blank=True, null=True)
+    file = models.ImageField(upload_to="images", null=True)
     name = models.CharField(max_length=50)
     thumbnail_200 = models.ImageField(upload_to='thumbnails/200/', null=True, blank=True)
-    thumbnail_200_link = models.URLField(null=True, blank=True)
     thumbnail_400 = models.ImageField(upload_to='thumbnails/400/', null=True, blank=True)
-    thumbnail_400_link = models.URLField(null=True, blank=True)
-    original_link = models.URLField(null=True, blank=True)
-    expiring_link = models.URLField(null=True, blank=True)
+    file_with_expiring_link = models.ImageField(upload_to="images/expiring", blank=True, null=True)
+    link_expiration_seconds = models.IntegerField(validators=[MinValueValidator(300), 
+        MaxValueValidator(30000),], null=True, blank=True)
     upload_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} uploaded by {self.user}"
+    
+@receiver(pre_delete, sender=Image)
+def delete_image_files(sender, instance, **kwargs):
+    if instance.file:
+        if os.path.isfile(instance.file.path):
+            os.remove(instance.file.path)
+
+    if instance.thumbnail_200:
+        if os.path.isfile(instance.thumbnail_200.path):
+            os.remove(instance.thumbnail_200.path)
+
+    if instance.thumbnail_400:
+        if os.path.isfile(instance.thumbnail_400.path):
+            os.remove(instance.thumbnail_400.path)
 
 
 class UserTierAssociation(models.Model):
@@ -35,4 +49,4 @@ class UserTierAssociation(models.Model):
     tier = models.ForeignKey(Tier, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return f"{self.user.username}'s plan: {self.tier.name}"
+        return f"{self.user.username}'s tier: {self.tier.name}"

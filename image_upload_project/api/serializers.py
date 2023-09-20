@@ -8,9 +8,7 @@ class TierSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class ImageSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(many=False)
     class Meta:
         model = Image
         fields = '__all__'
