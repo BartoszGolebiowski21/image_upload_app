@@ -19,6 +19,7 @@ def get_routes(request):
         {'GET': 'api/users/token/'},
         {'GET': 'api/tiers/'},
         {'GET': 'api/tiers/id'},
+        {'POST': 'images/upload/'}
     ]
     return Response(routes)
 

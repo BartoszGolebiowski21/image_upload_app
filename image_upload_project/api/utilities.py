@@ -24,8 +24,7 @@ def generate_thumbnail(file, thumbnail_height):
 
     Example usage:
         thumbnail = generate_thumbnail(image_file, 200)
-        # 'thumbnail' will contain the generated thumbnail image.
-
+        'thumbnail' will contain the generated thumbnail image.
     """
     image = PILImage.open(file)
     ratio = (thumbnail_height/float(image.size[1]))
