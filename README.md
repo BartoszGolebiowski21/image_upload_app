@@ -1,5 +1,10 @@
 # Image upload app
 
+Issues solved:
+- uploading images by user via HTTP request,
+- listing user's images,
+- uploading images and generating thumbnails based on the user's tier.
+
 Issues to solve:
 - validation is not functioning correctly,
 - custom tier functionality is not working,
